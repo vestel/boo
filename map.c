@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <openssl/md5.h>
-
 
 //char SAMPLE[33]="66d9978935150b34b9dc0741bc642be2\0";
 /* This is md5 hash for my task. For a testing purpose
@@ -22,43 +20,25 @@ void substr(char dest[], char src[], int offset, int len)
     dest[i] = '\0';
 }
 
-void print_md5_sum(unsigned char* md) {
-    int i;
-    for(i=0; i <MD5_DIGEST_LENGTH; i++) {
-        printf("%02x",md[i]);
-    }
-}
-
-void convert_md5_string(unsigned char* md, char result[]){
-    int i;
-    for(i=0; i<MD5_DIGEST_LENGTH; i++) {
-        *result++ = SYMBOLS[(md[i]>>4) & 0xf];
-        *result++ = SYMBOLS[md[i] & 0xf];
-    }
-    *result++ ='\0';
-}
-
-int cmpmd5(unsigned char* md){
-    char md5str[MD5_DIGEST_LENGTH*2+1];
-    convert_md5_string(md, md5str);
-    return strcmp(md5str,SAMPLE);
-}
-
-int strip_line(char line[]){
+void strip_line(char line[]){
     char tmp[LENGTH];
-    unsigned char result[MD5_DIGEST_LENGTH];
+    char *result;
     int line_length=strlen(line);
     int i,j,k;
+    result="";
     for(i=0;i<line_length;i++){
-        for(j=1; j<LENGTH; j++){
+        for(j=0; j<LENGTH;){
             for(k=0; k<4; k++){
+                j++;
                 substr(tmp,line,i,j);
                 if (strlen(tmp)<j) break;
+                if (j>LENGTH) break;
+                printf("\"%s\" ",tmp);
             }
-            printf("\n");
+            if (j<=LENGTH) printf("\n");
         }
     }
-    return 1;
+    return;
 }
 
 FILE *fr; //File Reference
@@ -67,11 +47,8 @@ int main(int argc, char *argv[]){
     fr = fopen("testfile.txt", "rt");
     char line[FILE_LINE_LENGTH];
     char* one;
-    char two[MD5_DIGEST_LENGTH*2+1];
-    unsigned char result[MD5_DIGEST_LENGTH];
-    int flag = 1;
-    while( (fgets(line,FILE_LINE_LENGTH,fr)!=NULL) && (flag) ){
-        flag = strip_line(line);
+    while( (fgets(line,FILE_LINE_LENGTH,fr)!=NULL) ){
+        strip_line(line);
     }
     close(fr);
     return 0;

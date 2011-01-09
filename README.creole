@@ -1,0 +1,20 @@
+== 1.Uzdevums (max 8 punkti)
+
+# Uz UNIX bāzes izveidot MPI paralēlo programmu kompilācijas un izpildes vidi (skatīt pagājušās lekcijas slaidus; MacOS X gadījumā ņemiet vērā, ka MPI ir daļēji iebūvēts).
+# Uzrakstīt nelielu MPI programmu, kas vec CPU-ietilpīgus aprēķinus. Piemēram, uzrakstīt programmu, kas atrod ASCII teksta virknīti ar <6 simboliem, kuras MD5 ir 66d9978935150b34b9dc0741bc642be2 vai risina kādu citu vismaz līdzīgas sarežģītības uzdevumu.Programmu rakstīt maināmam paralēlu procesu skaitam.
+# Uzrakstīto MPI programmu palaist ar dažādu paralēlu procesu skaitu uz datora ar vismaz 2 fiziskiem procesoriem jeb klāsterī. Salīdzināt programmas izpildes laiku izmantojot dažādu procesoru skaitu (vismaz 1CPU un 2CPU).
+
+
+== 2.Uzdevums (kopā ar 1. uzdevumu max 9 punkti)
+
+# Instalēt (ieskaitot pamat-konfigurāciju) kādu tīkla serveri UNIX vidē (Mail serveris, Web portāls, WebMail, DNS serveris, Proxy serveris, aplikācijas pieeja caur inetd serveri, tml.) Pietiek, ja aplikācija darbojas no localhost.
+
+
+== 3.Uzdevums (jebkurš apakšpunkts kopā ar 1. un 2. uzdevumu max 10 punkti)
+
+# MPI klāsteri palaist uz vairākiem fiziskiem datoriem,
+# MPI uzdevumu izpildīt EGEE Grid vai citā publiskā klāsteru vidē,
+# Realizēt slodzes sadalīšanu starp 2 vai vairāk identiskiem tīkla serveriem
+# MPI realizēt uzdevumu, kas nav vienkārši sadalāms N neatkarīgos apakšuzdevumos un tādēļ prasa intensīvu MPI komunikāciju starp paralēliem procesiem.
+# Kāds cits netriviāls paplašinājums 1. vai 2. uzdevumam
+

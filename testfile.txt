@@ -1,0 +1,10 @@
+This is test file
+To test an application
+Any text can be found in this file
+  Even space-started lines
+
+and gaps
+
+TEST
+
+and multiple empty lines

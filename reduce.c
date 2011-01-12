@@ -5,7 +5,10 @@
 int LENGTH=7;
 char SAMPLE[33]="033bd94b1168d7e4f0d644c3c95e35bf\0";
 char SYMBOLS[17]="0123456789abcdef\0";
-int flag = 0;
+int flag = 1;
+FILE *fr; //File Reference
+int FILE_LINE_LENGTH=90;
+int rank, size;
 
 void print_md5_sum(unsigned char* md) {
     int i;
@@ -30,26 +33,14 @@ int cmpmd5(unsigned char* md){
 }
 
 void print_hello(char *argv){
-    int rank, size;
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-    MPI_Comm_size (MPI_COMM_WORLD, &size);
     char chunk[LENGTH];
     split_line(chunk,argv,rank);
-    printf("[%d.%d]: %s", rank, size, chunk);
     unsigned char result[MD5_DIGEST_LENGTH];
     MD5(chunk,strlen(chunk),result);
     if (cmpmd5(result)==0) {
-        printf("\n\nMatch! The real substring is %s\n",chunk);
-        return;
+        printf("\n[%d.%d] Match found! Answer is %s\n",rank,size,chunk);
+        MPI_Abort(MPI_COMM_WORLD,0);
     }
-}
-
-void substr(char dest[], char src[], int offset, int len)
-{
-    int i;
-    for(i = 0; i < len && src[offset + i] != '\0'; i++)
-            dest[i] = src[i + offset];
-    dest[i] = '\0';
 }
 
 void split_line(char dest[], char src[], int offset)
@@ -69,27 +60,35 @@ void split_line(char dest[], char src[], int offset)
     dest[pos]='\0';
 }
 
-FILE *fr; //File Reference
-int FILE_LINE_LENGTH=90;
-int PROC_COUNT=4;
 
 int main(int argc, char *argv[])
 {
     MPI_Init (&argc, &argv);
+    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_size (MPI_COMM_WORLD, &size);
     fr = fopen("testfile.txt", "rt");
     char line[FILE_LINE_LENGTH];
     while( (fgets(line,FILE_LINE_LENGTH,fr)!=NULL) && (flag) ){
-        MPI_Bcast( &line, LENGTH*10, MPI_CHAR, 0, MPI_COMM_WORLD );
-        int i, j, k, count=1, pos=0;
-        char tmp[LENGTH*4+1];
-        for(i=0;i<strlen(line);i++){
-            for(j=0;j<PROC_COUNT;j++){
-                for(k=0;k<LENGTH;k++){
-                    tmp[pos++]=str[i];
+        MPI_Bcast( &line, FILE_LINE_LENGTH, MPI_CHAR, 0, MPI_COMM_WORLD );
+        int source_pos=0, word_count=0, max_len=0, result_pos=0, iter;
+        char tmp[LENGTH*size+1];
+        for(source_pos=0;source_pos<strlen(line);source_pos++){
+            for(max_len=1;max_len<LENGTH;max_len++){
+                word_count++;
+                if (word_count % size == 0)
+                {
+                    tmp[result_pos]='\0';
+                    MPI_Bcast( &tmp, strlen(tmp), MPI_CHAR, 0, MPI_COMM_WORLD );
+                    print_hello(tmp);
+                    result_pos=0;
                 }
+                if (source_pos+max_len>strlen(line)) break;
+                for(iter=0;iter<max_len; iter++){
+                    tmp[result_pos++] = line[source_pos+iter];
+                }
+                tmp[result_pos++]='\t';
             }
         }
-        print_hello(line);
     }
     close(fr);
     MPI_Finalize();
